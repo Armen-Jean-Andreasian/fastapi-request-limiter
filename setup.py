@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name='fastapi-request-limiter',
     packages=['request_limiter_middleware'],
-    version='1.0',
+    version='1.0.1',
     license='BSD',
 
     description='This middleware provides request limiting functionality for FastAPI applications, allowing you to control and manage the rate of incoming requests based on client IP addresses.',
@@ -18,12 +18,9 @@ setup(
     keywords=['FastAPI', 'request-limiter', 'python'],
 
     classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Developers',
-        'Topic :: API Development :: FastAPI :: Request Limiter :: API Middleware :: Libraries :: Python Modules',
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: BSD License",
-        "Operating System :: OS Independent",
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Framework :: FastAPI',
+        'Development Status :: 4 - Beta',
     ],
 
     python_requires='>=3.8',

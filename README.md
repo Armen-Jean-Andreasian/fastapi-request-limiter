@@ -60,7 +60,7 @@ It includes blocking a specific IP address, saving the current IP requests histo
 
 ---
 ### Scheme:
-![scheme](scheme.png)
+![scheme](https://raw.githubusercontent.com/Armen-Jean-Andreasian/fastapi-request-limiter/master/scheme.png)
 
 ---
 ## FastAPI Request Limiter Middleware contains of three parts:
