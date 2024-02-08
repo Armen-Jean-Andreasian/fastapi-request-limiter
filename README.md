@@ -135,7 +135,7 @@ This project is licensed under the terms of the [BSD license](LICENCE.rst).
 -- -
 
 ### Links:
-- [GitHub Repository](https://github.com/Armen-Jean-Andreasian/fastapi-request-limiter-middleware)
-- [PyPI Package](https://pypi.org/project/fastapi-request-limiter-middleware/)
+- [GitHub Repository](https://github.com/Armen-Jean-Andreasian/fastapi-request-limiter.git)
+- [PyPI Package](https://pypi.org/project/fastapi-request-limiter/)
 
 ---
