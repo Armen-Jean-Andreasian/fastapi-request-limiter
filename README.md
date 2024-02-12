@@ -2,6 +2,12 @@
 
 This middleware provides request limiting functionality for FastAPI applications, allowing you to control and manage the rate of incoming requests based on client IP addresses.
 
+<div align="center">
+  <img src="cover.gif" alt="Cover GIF">
+</div>
+
+---
+
 ## Installation
 
 ```bash
