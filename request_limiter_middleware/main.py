@@ -2,6 +2,7 @@ from .requests_archive import RequestsArchive
 from .whitelisted_addresses import WhitelistedIpAddresses
 import json
 from fastapi import Request
+from fastapi import HTTPException
 
 
 class RequestLimitMiddleware:
@@ -55,31 +56,46 @@ class RequestLimitMiddleware:
         if scope['type'] not in self.scopes_to_limit:
             return await self.app(scope, receive, send)
 
+        client_ip = Request(scope).client.host
+
+        # IP is whitelisted
+        if client_ip in self.whitelisted_ip_addresses:
+            return await self.app(scope, receive, send)
+
+        # first time
+        if client_ip not in self.requests_archive:
+            self.requests_archive.add_ip(ip=client_ip, seconds=self.seconds)
+            return await self.app(scope, receive, send)
+
         else:
-            client_ip = Request(scope).client.host
+            # old client
+            remaining_time = self.requests_archive.get_remaining_time(ip=client_ip)
 
-            if client_ip in self.whitelisted_ip_addresses:
-                return await self.app(scope, receive, send)
+            # permanently blacklisted IP
+            if remaining_time is False:
+                raise HTTPException(status_code=429, detail="You are blocked.")
 
-            else:
-                if client_ip not in self.requests_archive.history:
-                    self.requests_archive.add_ip(ip=client_ip, seconds=self.seconds)
+            # if something went wrong (it should not be None)
+            elif remaining_time is None:
+                raise HTTPException(status_code=500, detail="Server side error. Waiting time expected float, None found")
+
+            # familiar IP
+            elif type(remaining_time) is float:
+
+                # no limit
+                if remaining_time <= 0:
+                    self.requests_archive.extend_time(ip=client_ip, seconds=self.seconds)
                     return await self.app(scope, receive, send)
 
+                # limit found
                 else:
-                    remaining_time = self.requests_archive.get_remaining_time(ip=client_ip)
+                    readable_remaining_time = "{:.8f}".format(float(remaining_time))
+                    message = {"HTTPException": f"Rate limit exceeded. Wait for {readable_remaining_time} seconds."}
 
-                    if remaining_time == 0:
-                        self.requests_archive.extend_time(ip=client_ip, seconds=self.seconds)
-                        return await self.app(scope, receive, send)
-
-                    else:
-                        message = {"HTTPException": f"Rate limit exceeded. Wait for {remaining_time} seconds."}
-
-                        response = {
-                            "type": "http.response.start",
-                            "status": 429,
-                            "headers": [(b"content-type", b"application/json")],
-                            "body": json.dumps(message).encode("utf-8")
-                        }
-                        await send(response)
+                    response = {
+                        "type": "http.response.start",
+                        "status": 429,
+                        "headers": [(b"content-type", b"application/json")],
+                        "body": json.dumps(message).encode("utf-8")
+                    }
+                    await send(response)
