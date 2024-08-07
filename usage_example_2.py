@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+
 from request_limiter_middleware import RequestLimitMiddleware
 from request_limiter_middleware import Backup, BanHammer
 

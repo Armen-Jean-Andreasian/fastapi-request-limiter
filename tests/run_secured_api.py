@@ -1,8 +1,10 @@
-from fastapi import FastAPI
+from fastapi_app import FastApiTestAppFactory
 from request_limiter_middleware import RequestLimitMiddleware
 from request_limiter_middleware import Backup, BanHammer
 
-app = FastAPI()
+app = FastApiTestAppFactory.get_app()
+middleware = RequestLimitMiddleware
+
 
 # Enabling request limiting
 app.add_middleware(RequestLimitMiddleware, whitelisted_ip_addresses=(),
@@ -11,14 +13,9 @@ app.add_middleware(RequestLimitMiddleware, whitelisted_ip_addresses=(),
 # loading history backup
 Backup.load_archive('file.json')
 
-
-@app.get(path='/')
-async def home():
-    return {"message": "Welcome home"}
-
-
 if __name__ == '__main__':
     import uvicorn
+
     print()
 
     uvicorn.run(app, host="127.0.0.1", port=8000)
